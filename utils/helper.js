@@ -1,52 +1,52 @@
 const analyzeComplexity = (ast) => {
-  let complexity = 'O(1)'; // Default complexity
-  let isLinear = false;
-  let isQuadratic = false;
+  let isRecursive = false;
+  let loopCount = 0;
+  let maxLoopDepth = 0;
 
-  const traverse = (node) => {
+  const traverse = (node, currentDepth) => {
     switch (node.type) {
       case 'ForStatement':
       case 'WhileStatement':
-        isLinear = true;
+        loopCount++;
+        maxLoopDepth = Math.max(maxLoopDepth, currentDepth);
         break;
       case 'CallExpression':
         if (node.callee.name === 'recurse') {
-          isLinear = true; // Simplified check for recursion
+          isRecursive = true;
         }
         break;
       default:
         break;
     }
 
-    if (node.type === 'ForStatement' || node.type === 'WhileStatement') {
-      // Additional logic to detect nested loops, etc.
-      // Example: Check for nested loops
-      node.body.body.forEach((statement) => {
-        if (
-          statement.type === 'ForStatement' ||
-          statement.type === 'WhileStatement'
-        ) {
-          isQuadratic = true;
-        }
-      });
-    }
-
+    // Recursively traverse child nodes
     for (let key in node) {
       if (node[key] && typeof node[key] === 'object') {
-        traverse(node[key]);
+        traverse(node[key], currentDepth + 1);
       }
     }
   };
 
-  traverse(ast);
+  traverse(ast, 0);
 
-  if (isQuadratic) {
-    complexity = 'O(n^2)';
-  } else if (isLinear) {
-    complexity = 'O(n)';
+  // Determine the overall complexity
+  if (isRecursive) {
+    return 'Recursive function detected';
+  } else if (loopCount === 0) {
+    return 'O(1)';
+  } else if (loopCount === 1) {
+    return 'O(n)';
+  } else if (loopCount === 2) {
+    if (maxLoopDepth === 1) {
+      return 'O(n^2)';
+    } else if (maxLoopDepth === 2) {
+      return 'O(n^3)';
+    } else {
+      return 'O(n^2)'; // Default to quadratic if not sure about depth
+    }
+  } else {
+    return 'Complex analysis required';
   }
-
-  return complexity;
 };
 
 export { analyzeComplexity };
