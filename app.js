@@ -5,9 +5,13 @@ import cors from 'cors';
 import { analyzeComplexity } from './utils/helper.js';
 
 const app = express();
-const PORT = 5000;
 
 app.use(express.json());
+
+// configure dotenv to use dot env files
+require('dotenv').config({ path: './.env' });
+
+const PORT = process.env.PORT || 4000;
 
 // Use CORS middleware with options
 app.use(cors());
