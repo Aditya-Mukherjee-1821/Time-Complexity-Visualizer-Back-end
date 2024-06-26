@@ -1,6 +1,7 @@
 // server.js
 import express from 'express';
 import esprima from 'esprima';
+import dotenv from 'dotenv';
 import cors from 'cors';
 import { analyzeComplexity } from './utils/helper.js';
 
@@ -9,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 // configure dotenv to use dot env files
-require('dotenv').config({ path: './.env' });
+dotenv.config({ path: './.env' });
 
 const PORT = process.env.PORT || 4000;
 
